@@ -15,7 +15,8 @@ Sites: [diamondlinux.org](https://diamondlinux.org) · [eggrun.ai](https://eggru
 ![Welcome](screenshots/01-welcome.png)
 ![Dark desktop](screenshots/02-desktop-dark.png)
 ![Light desktop](screenshots/03-desktop-light.png)
-![Console](screenshots/04-console.png)
+![Claude for Linux](screenshots/04-claude.png)
+![Console with Claude Code and the Codex CLI](screenshots/05-console.png)
 
 ## What is inside
 
