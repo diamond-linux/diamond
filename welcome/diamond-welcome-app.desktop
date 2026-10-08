@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome
+Comment=What this desktop is and where things are
+Exec=/usr/local/bin/diamond-welcome
+Icon=/usr/share/pixmaps/diamond.png
+Categories=System;Utility;

@@ -1,0 +1,5 @@
+NAME="Diamond Linux"
+PRETTY_NAME="Diamond Linux"
+ID=diamond
+ID_LIKE=debian
+HOME_URL="https://diamondlinux.org"

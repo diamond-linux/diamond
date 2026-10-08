@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Diamond Linux Welcome — the first-login window: what this desktop is, where things are.
+Shows once at login (autostart), then from the menu."""
+import os, subprocess, sys
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk, GdkPixbuf
+
+STAMP = os.path.expanduser("~/.config/diamond/welcome-shown")
+if "--autostart" in sys.argv:
+    if os.path.exists(STAMP):
+        sys.exit(0)
+    os.makedirs(os.path.dirname(STAMP), exist_ok=True)
+    open(STAMP, "w").close()
+
+GOLD = "#f5b81e"
+CSS = f"""
+window, .bg {{ background-color: #12121c; }}
+.title {{ font-size: 30px; font-weight: 800; color: #fbe6ad; }}
+.tag {{ font-size: 15px; color: {GOLD}; font-weight: 600; }}
+.sub {{ font-size: 13px; color: #b9b3a3; }}
+.section {{ font-size: 11px; font-weight: 700; color: {GOLD}; letter-spacing: 1px; }}
+.tile {{ background-color: #1b1b28; border: 1px solid #262636; border-radius: 14px; padding: 12px 6px; }}
+.tile:hover {{ background-color: #242436; border-color: {GOLD}; }}
+.tile label {{ color: #e8e2d2; font-size: 12px; }}
+.go {{ background-color: {GOLD}; background-image: none; color: #1a1408; font-weight: 700;
+       border-radius: 10px; padding: 8px 26px; border: none; text-shadow: none; }}
+.go:hover {{ background-color: #ffcf4a; }}
+"""
+
+TILES = [
+    ("YOUR DESKTOP", [
+        ("Chrome", "google-chrome", ["google-chrome-stable"]),
+        ("Files", "system-file-manager", ["nautilus"]),
+        ("Terminal", "utilities-terminal", ["kgx"]),
+        ("Settings", "preferences-system", ["gnome-control-center"]),
+        ("Text Editor", "accessories-text-editor", ["gnome-text-editor"]),
+        ("Look & feel", "preferences-desktop-theme", ["gnome-control-center", "appearance"]),
+    ]),
+    ("AI", [
+        ("Claude", "claude-desktop", ["claude-desktop"]),
+        ("Claude CLI", "claude-cli", ["kgx", "-e", "claude"]),
+        ("Codex", "chatgpt", ["chatgpt"]),
+        ("Codex CLI", "codex-cli", ["kgx", "-e", "codex"]),
+    ]),
+    ("EGGRUN", [
+        ("eggrun.ai", "eggrun", ["google-chrome-stable", "https://eggrun.ai"]),
+        ("Docs", "help-contents", ["google-chrome-stable", "https://docs.eggrun.ai"]),
+        ("Learn", "accessories-dictionary", ["google-chrome-stable", "https://learn.eggrun.ai"]),
+    ]),
+]
+
+def launch(_b, argv):
+    try:
+        subprocess.Popen(argv)
+    except Exception as e:
+        print(e, file=sys.stderr)
+
+# Follow the desktop's colour scheme (dark by default; light when the user flips it).
+try:
+    from gi.repository import Gio
+    _dark = "dark" in Gio.Settings.new("org.gnome.desktop.interface").get_string("color-scheme")
+except Exception:
+    _dark = True
+Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", _dark)
+win = Gtk.Window(title="Welcome to Diamond")
+win.set_default_size(760, 560)
+win.set_resizable(False)
+win.set_position(Gtk.WindowPosition.CENTER)
+win.connect("destroy", Gtk.main_quit)
+prov = Gtk.CssProvider(); prov.load_from_data(CSS.encode())
+Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), prov, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+outer.set_border_width(26); outer.get_style_context().add_class("bg")
+
+head = Gtk.Box(spacing=18)
+tb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6); tb.set_valign(Gtk.Align.CENTER)
+# the wordmark, as on the wallpaper, in place of a text title
+wpb = GdkPixbuf.Pixbuf.new_from_file_at_scale("/usr/share/pixmaps/diamond-wordmark.png", 220, 52, True)
+t = Gtk.Image.new_from_pixbuf(wpb); t.set_halign(Gtk.Align.START); t.set_margin_bottom(2)
+g = Gtk.Label(label="Hard like a diamond.", xalign=0); g.get_style_context().add_class("tag")
+s = Gtk.Label(label="A Linux desktop that stays out of your way. Your apps in the dock at the bottom, Claude and Codex ready to sign in, search from the top, everything else in Settings.", xalign=0)
+s.get_style_context().add_class("sub"); s.set_line_wrap(True); s.set_max_width_chars(70)
+for w_ in (t, g, s): tb.pack_start(w_, False, False, 0)
+head.pack_start(tb, True, True, 0)
+outer.pack_start(head, False, False, 0)
+
+for section, items in TILES:
+    lab = Gtk.Label(label=section, xalign=0); lab.get_style_context().add_class("section")
+    outer.pack_start(lab, False, False, 0)
+    row = Gtk.Box(spacing=10, homogeneous=True)
+    for name, icon, argv in items:
+        b = Gtk.Button(); b.get_style_context().add_class("tile"); b.set_relief(Gtk.ReliefStyle.NONE)
+        v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        im = Gtk.Image.new_from_icon_name(icon, Gtk.IconSize.DIALOG); im.set_pixel_size(36)
+        v.pack_start(im, False, False, 0); v.pack_start(Gtk.Label(label=name), False, False, 0)
+        b.add(v); b.connect("clicked", launch, argv); row.pack_start(b, True, True, 0)
+    while len(row.get_children()) < 6:
+        row.pack_start(Gtk.Box(), True, True, 0)
+    outer.pack_start(row, False, False, 0)
+
+foot = Gtk.Box(); go = Gtk.Button(label="Let's go"); go.get_style_context().add_class("go")
+go.connect("clicked", lambda *_: Gtk.main_quit()); foot.pack_end(go, False, False, 0)
+outer.pack_end(foot, False, False, 0)
+win.add(outer); win.show_all(); Gtk.main()

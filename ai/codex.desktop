@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Codex CLI
+Comment=OpenAI Codex in a terminal
+Exec=kgx -e codex
+Icon=codex-cli
+Terminal=false
+Categories=Development;
+Keywords=codex;openai;ai;terminal;cli;

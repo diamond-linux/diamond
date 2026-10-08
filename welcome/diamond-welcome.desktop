@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to Diamond
+Exec=/usr/local/bin/diamond-welcome --autostart
+Icon=/usr/share/pixmaps/diamond.png
+X-GNOME-Autostart-Delay=3
+OnlyShowIn=GNOME;
+NoDisplay=true

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Claude CLI
+Comment=Claude Code in a terminal
+Exec=kgx -e claude
+Icon=claude-cli
+Terminal=false
+Categories=Development;
+Keywords=claude;ai;terminal;cli;

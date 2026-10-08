@@ -1,0 +1,149 @@
+# status: buildable
+# Diamond Linux — Hard like a diamond. The house desktop: the Garuda GNOME look
+# (dark by default with a light scheme a click away, a floating dock, the search
+# pill, a poster wallpaper per scheme, a Welcome window) on Debian 13 with GNOME 48,
+# Chrome, and Claude + ChatGPT/Codex (desktop apps and CLIs) on the dock.
+#
+# Base: egg/debian-13 (stable, apt, glibc — the audience is people who found
+# Ubuntu hard; nothing may break or refuse to run). Desktop: GNOME 48 without
+# recommends, Dash to Dock for the dock. Theme: stock Adwaita, dark, with the
+# yellow accent (libadwaita apps follow it natively; no GTK theme to maintain).
+# Icons: Papirus-Dark (GPL-3), trimmed to the two variants in use. Font: Inter.
+# Greeter: GDM, autologin. Browser: Chrome, Google's own arm64 build from
+# dl.google.com (Firefox dropped; Chrome is what people know).
+# Published as egg/diamond; distroman/diamond keeps the research notes and test history.
+
+BOOT mode=uefi
+FROM egg/debian-13
+CLASS M
+TITLE "Diamond Linux"
+GPU virgl vram=2G
+DISPLAY 1280x800 scale=2
+NETWORK restricted
+
+LABEL description="Diamond Linux: a beautiful, easy Linux desktop with Chrome, Claude and Codex. Hard like a diamond." category="Desktop" tags="diamond,debian,gnome,chrome,desktop" license="EggRun EULA"
+LOGO logo.png
+
+INSTALL agent
+
+RUN apt-get update
+# GNOME 48 without recommends: the shell, session, GDM, the core apps, Dash to
+# Dock for the Garuda-style floating dock, AppIndicator for tray icons, the
+# extensions pack for user-theme. Recommends would pull games, printing,
+# Evolution, the full GNOME.
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    gnome-shell gnome-session gdm3 gnome-control-center gnome-settings-daemon \
+    nautilus gnome-console gnome-text-editor evince file-roller loupe gnome-calculator \
+    gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator gnome-shell-extensions gnome-tweaks \
+    libgl1-mesa-dri mesa-vulkan-drivers network-manager xdg-user-dirs \
+    fonts-inter fonts-noto-core fonts-noto-color-emoji papirus-icon-theme \
+    dbus-user-session pipewire-audio python3-gi gir1.2-gtk-3.0 wget ca-certificates xz-utils
+# Chrome: Google's arm64 .deb; its postinst registers Google's apt repo and key.
+RUN wget -qO /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_arm64.deb \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/chrome.deb && rm /tmp/chrome.deb
+# AI on the dock. Claude Desktop (Anthropic's Linux beta) and Claude Code come
+# from Anthropic's signed apt repositories, so apt keeps them current; the
+# ChatGPT app with Codex (OpenAI's Linux preview) is OpenAI's own arm64 .deb,
+# whose postinst registers OpenAI's repository; the Codex CLI is the npm
+# package on Node 22 from NodeSource. All four sign in on first launch.
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl gnupg \
+ && install -d -m 0755 /etc/apt/keyrings \
+ && curl -fsSLo /etc/apt/keyrings/claude-desktop.asc https://downloads.claude.ai/claude-desktop/key.asc \
+ && curl -fsSLo /etc/apt/keyrings/claude-code.asc https://downloads.claude.ai/keys/claude-code.asc \
+ && gpg --show-keys --with-colons /etc/apt/keyrings/claude-code.asc | grep -q '^fpr:::::::::31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE:' \
+ && echo "deb [signed-by=/etc/apt/keyrings/claude-desktop.asc] https://downloads.claude.ai/claude-desktop/apt/stable stable main" > /etc/apt/sources.list.d/claude-desktop.list \
+ && echo "deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/stable stable main" > /etc/apt/sources.list.d/claude-code.list \
+ && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends claude-desktop claude-code \
+ && claude --version
+RUN wget -qO /tmp/chatgpt.deb https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_arm64.deb \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/chatgpt.deb && rm /tmp/chatgpt.deb
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nodejs \
+ && npm install -g @openai/codex >/dev/null && codex --version
+# The launchers the dock pins: the two apps come with their own (names read from
+# the installed packages, not guessed); the two CLIs get one each, with the
+# terminal icon, that opens Console with the tool running.
+COPY ai/claude-code.desktop /usr/share/applications/claude-code.desktop
+COPY ai/codex.desktop /usr/share/applications/codex.desktop
+# Their icons: the terminal tile badged with each vendor's mark, so the dock
+# reads at a glance which terminal is which.
+COPY ai/icons/256/claude-cli.png /usr/share/icons/hicolor/256x256/apps/claude-cli.png
+COPY ai/icons/256/codex-cli.png /usr/share/icons/hicolor/256x256/apps/codex-cli.png
+COPY ai/icons/128/claude-cli.png /usr/share/icons/hicolor/128x128/apps/claude-cli.png
+COPY ai/icons/128/codex-cli.png /usr/share/icons/hicolor/128x128/apps/codex-cli.png
+COPY ai/icons/64/claude-cli.png /usr/share/icons/hicolor/64x64/apps/claude-cli.png
+COPY ai/icons/64/codex-cli.png /usr/share/icons/hicolor/64x64/apps/codex-cli.png
+COPY ai/icons/48/claude-cli.png /usr/share/icons/hicolor/48x48/apps/claude-cli.png
+COPY ai/icons/48/codex-cli.png /usr/share/icons/hicolor/48x48/apps/codex-cli.png
+# The EggRun mark (the desktop app's own icon) for the eggrun.ai tile.
+COPY ai/icons/256/eggrun.png /usr/share/icons/hicolor/256x256/apps/eggrun.png
+COPY ai/icons/128/eggrun.png /usr/share/icons/hicolor/128x128/apps/eggrun.png
+COPY ai/icons/64/eggrun.png /usr/share/icons/hicolor/64x64/apps/eggrun.png
+COPY ai/icons/48/eggrun.png /usr/share/icons/hicolor/48x48/apps/eggrun.png
+RUN gtk-update-icon-cache -q -f /usr/share/icons/hicolor || true
+RUN set -e; cd /usr/share/applications; \
+    CLAUDE=$(grep -lis 'Exec=.*claude-desktop' *.desktop | head -n1); CHATGPT=$(grep -lis 'Exec=.*chatgpt' *.desktop | head -n1); \
+    test -n "$CLAUDE" && test -n "$CHATGPT"; echo "dock: $CLAUDE $CHATGPT"; \
+    printf '%s\n' "[org.gnome.shell]" "favorite-apps=['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', '$CLAUDE', 'claude-code.desktop', '$CHATGPT', 'codex.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'diamond-welcome.desktop']" > /usr/share/glib-2.0/schemas/60_diamond-dock.gschema.override
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Papirus ships five variants; the desktop uses Papirus-Dark (inherits Papirus).
+RUN rm -rf /usr/share/icons/ePapirus /usr/share/icons/ePapirus-Dark /usr/share/icons/Papirus-Light
+
+# Branding, defaults, GDM, Welcome.
+COPY wallpaper-dark.jpg /usr/share/backgrounds/diamond/diamond-dark.jpg
+COPY wallpaper-light.jpg /usr/share/backgrounds/diamond/diamond-light.jpg
+COPY logo.png /usr/share/pixmaps/diamond.png
+COPY menu-diamond.png /usr/share/pixmaps/diamond-menu.png
+COPY wordmark-tight.png /usr/share/pixmaps/diamond-wordmark.png
+COPY diamond.gschema.override /usr/share/glib-2.0/schemas/50_diamond.gschema.override
+COPY gdm/daemon.conf /etc/gdm3/daemon.conf
+COPY welcome/diamond-welcome /usr/local/bin/diamond-welcome
+COPY welcome/diamond-welcome.desktop /etc/xdg/autostart/diamond-welcome.desktop
+COPY welcome/diamond-welcome-app.desktop /usr/share/applications/diamond-welcome.desktop
+COPY diamond-release /etc/diamond-release
+RUN glib-compile-schemas /usr/share/glib-2.0/schemas && chmod 0755 /usr/local/bin/diamond-welcome
+
+# The network belongs to NetworkManager, so the shell's network indicator is
+# live; the base's ifupdown stanza for eth0 would leave the device "unmanaged".
+RUN sed -i '/eth0/d' /etc/network/interfaces
+
+# The base image's test user goes; the desktop user is diamond.
+RUN userdel -r test 2>/dev/null || true
+RUN useradd -m -u 1000 -s /bin/bash -c "Diamond" -G sudo,video,audio,netdev diamond && echo "diamond:diamond" | chpasswd
+# The account picture: the gem, for GDM, the lock screen and the user menu.
+RUN install -o diamond -g diamond -m 0644 /usr/share/pixmaps/diamond.png /home/diamond/.face \
+ && mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users \
+ && cp /usr/share/pixmaps/diamond.png /var/lib/AccountsService/icons/diamond \
+ && printf '[User]\nIcon=/var/lib/AccountsService/icons/diamond\nSystemAccount=false\n' > /var/lib/AccountsService/users/diamond
+RUN systemctl set-default graphical.target && systemctl enable gdm3 NetworkManager \
+ && systemctl disable getty@tty1.service 2>/dev/null || true
+
+# Size: documentation and spare locales are not what people download a desktop for.
+RUN rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/* \
+ && find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' ! -name 'locale.alias' -exec rm -rf {} + \
+ && printf 'path-exclude /usr/share/doc/*\npath-exclude /usr/share/man/*\npath-exclude /usr/share/info/*\npath-include /usr/share/doc/*/copyright\n' > /etc/dpkg/dpkg.cfg.d/01-nodoc
+
+# Size: the stock GNOME wallpapers (ours live in backgrounds/diamond), the build's
+# journal and the installer log are not part of the product.
+RUN rm -rf /usr/share/backgrounds/gnome /usr/share/gnome-background-properties /var/log/installer \
+ && (journalctl --rotate; journalctl --vacuum-time=1s) >/dev/null 2>&1; find /var/log -type f -name '*.log' -exec truncate -s 0 {} + \
+ && mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nSystemMaxUse=48M\n' > /etc/systemd/journald.conf.d/50-diamond.conf
+
+# The warm snapshot ships every non-zero page of RAM. With init_on_free the
+# kernel zeroes each page as it is freed, so at any moment only the live
+# desktop is non-zero and every snapshot of this egg, including the ones a
+# user takes, packs to the live set (~1-3% CPU on allocation-heavy work;
+# nothing a desktop notices). The proper mechanism is a balloon device;
+# until then this is the whole story.
+RUN sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 init_on_free=1"/' /etc/default/grub \
+ && grep -q 'init_on_free=1' /etc/default/grub && update-grub
+
+# Last: give the freed blocks back. Everything deleted above (apt lists, the
+# Chrome .deb, docs, the base image's test user) still sits on the disk as
+# written data until the filesystem trims it; the disk zeroes trimmed ranges
+# and the snapshot packer skips zero chunks, so the hub pack carries only
+# what is live.
+RUN sync && fstrim -v /
+
+CMD ["/bin/sh"]
