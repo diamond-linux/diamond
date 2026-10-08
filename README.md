@@ -64,5 +64,5 @@ Diamond stands on other people's work. See [CREDITS.md](CREDITS.md).
 ## Licence
 
 The recipe, the Welcome app, the configuration and the Diamond artwork are © Camouflage
-Networks Inc. and released under the licence in [LICENSE](LICENSE). Third-party names and
+Networks Inc. and released under the GNU General Public License v3.0, see [LICENSE](LICENSE). Third-party names and
 marks referenced here belong to their owners; see CREDITS.md for the carve-outs.
