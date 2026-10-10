@@ -17,7 +17,10 @@ BOOT mode=uefi
 FROM egg/debian-13
 CLASS M
 TITLE "Diamond Linux"
-LOGIN diamond:diamond autologin
+LOGIN_USER diamond
+LOGIN_PASSWORD diamond
+LOGIN_AUTOLOGIN true
+LOGIN_HELPTEXT "Signed in as diamond by itself. When the system asks for a password (installing an app, changing a setting), use the one below."
 GPU virgl vram=2G
 DISPLAY 1280x800 scale=2
 NETWORK restricted
