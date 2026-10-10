@@ -17,7 +17,7 @@ BOOT mode=uefi
 FROM egg/debian-13
 CLASS M
 TITLE "Diamond Linux"
-LOGIN diamond:diamond auto
+LOGIN diamond:diamond autologin
 GPU virgl vram=2G
 DISPLAY 1280x800 scale=2
 NETWORK restricted
