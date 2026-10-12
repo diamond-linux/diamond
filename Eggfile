@@ -38,7 +38,7 @@ RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     gnome-shell gnome-session gdm3 gnome-control-center gnome-settings-daemon \
     nautilus gnome-console gnome-text-editor evince file-roller loupe gnome-calculator \
-    gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator gnome-shell-extensions gnome-shell-extension-prefs gnome-tweaks \
+    gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator gnome-shell-extensions gnome-shell-extension-prefs gnome-menus gnome-tweaks \
     libgl1-mesa-dri mesa-vulkan-drivers network-manager xdg-user-dirs \
     fonts-inter fonts-noto-core fonts-noto-color-emoji papirus-icon-theme \
     dbus-user-session pipewire-audio python3-gi gir1.2-gtk-3.0 wget ca-certificates xz-utils
@@ -101,7 +101,8 @@ COPY logo.png /usr/share/pixmaps/diamond.png
 COPY menu-diamond.png /usr/share/pixmaps/diamond-menu.png
 COPY wordmark-tight.png /usr/share/pixmaps/diamond-wordmark.png
 # The dock is pinned (always visible, windows stop above it) and the top bar
-# has an Applications menu: two ways to find an app that never hide, the way
+# has an Applications menu (the apps-menu extension; it needs gnome-menus for
+# the applications.menu it reads, which no-recommends left out): two ways to find an app that never hide, the way
 # a Mac user expects. People who want it otherwise have the Extensions app
 # (gnome-shell-extension-prefs): Dash to Dock's own settings live there.
 COPY diamond.gschema.override /usr/share/glib-2.0/schemas/50_diamond.gschema.override
