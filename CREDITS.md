@@ -24,10 +24,9 @@ Sandbox Linux is a recipe on top of other people's work. Thank you to all of the
   https://garudalinux.org
 - **Tux** by Larry Ewing and The GIMP; the flat version by the Linux Foundation. Wallpaper art
   only in earlier builds; kept in the repository as `tux.svg`.
-- **The sandbox mark** (`sandbox.svg`, "browser-sandbox" from the progressive-webapps
-  security set) was downloaded from SVG Repo (https://www.svgrepo.com). Its collection
-  licence is being confirmed; if you are its author, please open an issue so we can credit
-  you properly or replace it.
+- **The sandbox mark** (`sandbox.svg`) is "Browser Sandbox" by Andreas Mehlsen, from the
+  Web Skills Flat Vectors collection, MIT License, via SVG Repo:
+  https://www.svgrepo.com/svg/439093/browser-sandbox
 - The SANDBOX wordmark is set in Avenir Next Heavy, an Apple system font; only the rendered
   images ship here. The wallpapers are the mark and the wordmark over the mark's own colours.
 
