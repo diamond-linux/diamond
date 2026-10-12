@@ -8,7 +8,7 @@ Sandbox is delivered as an **egg**: a complete computer as a file that installs 
 and starts from a warm snapshot. Get it from the EggRun hub as `egg/sandbox`, or build it
 yourself from this repository.
 
-Sites: [github.com/sandboxlinux/sandbox](https://github.com/sandboxlinux/sandbox) · [eggrun.ai](https://eggrun.ai)
+Sites: [sandboxlinux.org](https://sandboxlinux.org) · [github.com/sandboxlinux/sandbox](https://github.com/sandboxlinux/sandbox) · [eggrun.ai](https://eggrun.ai)
 
 ## Screenshots
 

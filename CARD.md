@@ -41,4 +41,4 @@ return. Chrome shows Google's terms on its first launch.
 
 ## Sites
 
-github.com/sandboxlinux/sandbox · eggrun.ai
+sandboxlinux.org · eggrun.ai

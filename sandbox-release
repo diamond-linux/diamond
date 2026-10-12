@@ -2,4 +2,4 @@ NAME="Sandbox Linux"
 PRETTY_NAME="Sandbox Linux"
 ID=sandbox
 ID_LIKE=debian
-HOME_URL="https://github.com/sandboxlinux/sandbox"
+HOME_URL="https://sandboxlinux.org"
