@@ -2,6 +2,6 @@
 Type=Application
 Name=Welcome
 Comment=What this desktop is and where things are
-Exec=/usr/local/bin/diamond-welcome
-Icon=/usr/share/pixmaps/diamond.png
+Exec=/usr/local/bin/sandbox-welcome
+Icon=/usr/share/pixmaps/sandbox.png
 Categories=System;Utility;

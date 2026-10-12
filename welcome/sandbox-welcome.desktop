@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to Sandbox
+Exec=/usr/local/bin/sandbox-welcome --autostart
+Icon=/usr/share/pixmaps/sandbox.png
+X-GNOME-Autostart-Delay=3
+OnlyShowIn=GNOME;
+NoDisplay=true

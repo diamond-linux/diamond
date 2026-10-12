@@ -1,7 +1,7 @@
-# Diamond Linux
+# Sandbox Linux
 
-Hard like a diamond. A beautiful, easy Linux desktop for people who found Linux
-hard to learn: GNOME with a floating dock, search from the top, Google Chrome,
+A beautiful, easy Linux desktop for people who found Linux
+hard to learn, sealed inside an egg: GNOME with a floating dock, search from the top, Google Chrome,
 Claude and Codex on the dock, and a Welcome window that says where things are. Debian 13 underneath, so
 everything built for Linux runs.
 
@@ -14,10 +14,10 @@ everything built for Linux runs.
 - Claude Desktop (Anthropic's Linux beta) and Claude Code, from Anthropic's apt repositories
 - ChatGPT with Codex (OpenAI's Linux preview) and the Codex CLI
 - All four on the dock; each signs in on first launch with your own account
-- Dark style by default with a light style one click away; a Diamond wallpaper
+- Dark style by default with a light style one click away; a Sandbox wallpaper
   for each
 - Welcome: Chrome, Files, Terminal, Settings, Look & feel, eggrun.ai, Docs, Learn
-- Signs you in as `diamond` (password `diamond`) with sudo
+- Signs you in as `sandbox` (password `sandbox`) with sudo
 - **No credentials baked in** beyond that local desktop account
 
 ## Resources
@@ -35,10 +35,10 @@ everything built for Linux runs.
 
 ## First run
 
-Double-click the icon. From a terminal: `egg run egg/diamond`.
+Double-click the icon. From a terminal: `egg run egg/sandbox`.
 The desktop appears with the Welcome window; press Let's go and it will not
 return. Chrome shows Google's terms on its first launch.
 
 ## Sites
 
-diamondlinux.org · eggrun.ai
+github.com/sandboxlinux/sandbox · eggrun.ai

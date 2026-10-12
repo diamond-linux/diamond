@@ -1,5 +1,5 @@
 # status: buildable
-# Diamond Linux — Hard like a diamond. The house desktop: the Garuda GNOME look
+# Sandbox Linux. The house desktop: the Garuda GNOME look
 # (dark by default with a light scheme a click away, a floating dock, the search
 # pill, a poster wallpaper per scheme, a Welcome window) on Debian 13 with GNOME 48,
 # Chrome, and Claude + ChatGPT/Codex (desktop apps and CLIs) on the dock.
@@ -11,21 +11,21 @@
 # Icons: Papirus-Dark (GPL-3), trimmed to the two variants in use. Font: Inter.
 # Greeter: GDM, autologin. Browser: Chrome, Google's own arm64 build from
 # dl.google.com (Firefox dropped; Chrome is what people know).
-# Published as egg/diamond; distroman/diamond keeps the research notes and test history.
+# Published as egg/sandbox; EggRun/docs/sandbox keeps the research notes and test history.
 
 BOOT mode=uefi
 FROM egg/debian-13
 CLASS M
-TITLE "Diamond Linux"
-LOGIN_USER diamond
-LOGIN_PASSWORD diamond
+TITLE "Sandbox Linux"
+LOGIN_USER sandbox
+LOGIN_PASSWORD sandbox
 LOGIN_AUTOLOGIN true
-LOGIN_HELPTEXT "Signed in as diamond by itself. When the system asks for a password (installing an app, changing a setting), use the one below."
+LOGIN_HELPTEXT "Signed in as sandbox by itself. When the system asks for a password (installing an app, changing a setting), use the one below."
 GPU virgl vram=2G
 DISPLAY 1280x800 scale=2
 NETWORK restricted
 
-LABEL description="Diamond Linux: a beautiful, easy Linux desktop with Chrome, Claude and Codex. Hard like a diamond." category="Desktop" tags="diamond,debian,gnome,chrome,desktop" license="EggRun EULA"
+LABEL description="Sandbox Linux: a beautiful, easy Linux desktop with Chrome, Claude and Codex, sealed inside an egg." category="Desktop" tags="sandbox,debian,gnome,chrome,desktop" license="EggRun EULA"
 LOGO logo.png
 
 INSTALL agent
@@ -91,43 +91,44 @@ RUN gtk-update-icon-cache -q -f /usr/share/icons/hicolor || true
 RUN set -e; cd /usr/share/applications; \
     CLAUDE=$(grep -lis 'Exec=.*claude-desktop' *.desktop | head -n1); CHATGPT=$(grep -lis 'Exec=.*chatgpt' *.desktop | head -n1); \
     test -n "$CLAUDE" && test -n "$CHATGPT"; echo "dock: $CLAUDE $CHATGPT"; \
-    printf '%s\n' "[org.gnome.shell]" "favorite-apps=['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', '$CLAUDE', 'claude-code.desktop', '$CHATGPT', 'codex.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'diamond-welcome.desktop']" > /usr/share/glib-2.0/schemas/60_diamond-dock.gschema.override
+    printf '%s\n' "[org.gnome.shell]" "favorite-apps=['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', '$CLAUDE', 'claude-code.desktop', '$CHATGPT', 'codex.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'sandbox-welcome.desktop']" > /usr/share/glib-2.0/schemas/60_sandbox-dock.gschema.override
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Papirus ships five variants; the desktop uses Papirus-Dark (inherits Papirus).
 RUN rm -rf /usr/share/icons/ePapirus /usr/share/icons/ePapirus-Dark /usr/share/icons/Papirus-Light
 
 # Branding, defaults, GDM, Welcome.
-COPY wallpaper-dark.jpg /usr/share/backgrounds/diamond/diamond-dark.jpg
-COPY wallpaper-light.jpg /usr/share/backgrounds/diamond/diamond-light.jpg
-COPY logo.png /usr/share/pixmaps/diamond.png
-COPY menu-diamond.png /usr/share/pixmaps/diamond-menu.png
-COPY wordmark-tight.png /usr/share/pixmaps/diamond-wordmark.png
+COPY wallpaper-dark.jpg /usr/share/backgrounds/sandbox/sandbox-dark.jpg
+COPY wallpaper-light.jpg /usr/share/backgrounds/sandbox/sandbox-light.jpg
+COPY logo.png /usr/share/pixmaps/sandbox.png
+COPY menu-sandbox.png /usr/share/pixmaps/sandbox-menu.png
+COPY wordmark-dark.png /usr/share/pixmaps/sandbox-wordmark-dark.png
+COPY wordmark-light.png /usr/share/pixmaps/sandbox-wordmark-light.png
 # The dock is pinned (always visible, windows stop above it) and the top bar
 # has an Applications menu (the apps-menu extension; it needs gnome-menus for
 # the applications.menu it reads, which no-recommends left out): two ways to find an app that never hide, the way
 # a Mac user expects. People who want it otherwise have the Extensions app
 # (gnome-shell-extension-prefs): Dash to Dock's own settings live there.
-COPY diamond.gschema.override /usr/share/glib-2.0/schemas/50_diamond.gschema.override
+COPY sandbox.gschema.override /usr/share/glib-2.0/schemas/50_sandbox.gschema.override
 COPY gdm/daemon.conf /etc/gdm3/daemon.conf
-COPY welcome/diamond-welcome /usr/local/bin/diamond-welcome
-COPY welcome/diamond-welcome.desktop /etc/xdg/autostart/diamond-welcome.desktop
-COPY welcome/diamond-welcome-app.desktop /usr/share/applications/diamond-welcome.desktop
-COPY diamond-release /etc/diamond-release
-RUN glib-compile-schemas /usr/share/glib-2.0/schemas && chmod 0755 /usr/local/bin/diamond-welcome
+COPY welcome/sandbox-welcome /usr/local/bin/sandbox-welcome
+COPY welcome/sandbox-welcome.desktop /etc/xdg/autostart/sandbox-welcome.desktop
+COPY welcome/sandbox-welcome-app.desktop /usr/share/applications/sandbox-welcome.desktop
+COPY sandbox-release /etc/sandbox-release
+RUN glib-compile-schemas /usr/share/glib-2.0/schemas && chmod 0755 /usr/local/bin/sandbox-welcome
 
 # The network belongs to NetworkManager, so the shell's network indicator is
 # live; the base's ifupdown stanza for eth0 would leave the device "unmanaged".
 RUN sed -i '/eth0/d' /etc/network/interfaces
 
-# The base image's test user goes; the desktop user is diamond.
+# The base image's test user goes; the desktop user is sandbox.
 RUN userdel -r test 2>/dev/null || true
-RUN useradd -m -u 1000 -s /bin/bash -c "Diamond" -G sudo,video,audio,netdev diamond && echo "diamond:diamond" | chpasswd
-# The account picture: the gem, for GDM, the lock screen and the user menu.
-RUN install -o diamond -g diamond -m 0644 /usr/share/pixmaps/diamond.png /home/diamond/.face \
+RUN useradd -m -u 1000 -s /bin/bash -c "Sandbox" -G sudo,video,audio,netdev sandbox && echo "sandbox:sandbox" | chpasswd
+# The account picture: the sandbox mark, for GDM, the lock screen and the user menu.
+RUN install -o sandbox -g sandbox -m 0644 /usr/share/pixmaps/sandbox.png /home/sandbox/.face \
  && mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users \
- && cp /usr/share/pixmaps/diamond.png /var/lib/AccountsService/icons/diamond \
- && printf '[User]\nIcon=/var/lib/AccountsService/icons/diamond\nSystemAccount=false\n' > /var/lib/AccountsService/users/diamond
+ && cp /usr/share/pixmaps/sandbox.png /var/lib/AccountsService/icons/sandbox \
+ && printf '[User]\nIcon=/var/lib/AccountsService/icons/sandbox\nSystemAccount=false\n' > /var/lib/AccountsService/users/sandbox
 RUN systemctl set-default graphical.target && systemctl enable gdm3 NetworkManager \
  && systemctl disable getty@tty1.service 2>/dev/null || true
 
@@ -136,11 +137,11 @@ RUN rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/* \
  && find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' ! -name 'locale.alias' -exec rm -rf {} + \
  && printf 'path-exclude /usr/share/doc/*\npath-exclude /usr/share/man/*\npath-exclude /usr/share/info/*\npath-include /usr/share/doc/*/copyright\n' > /etc/dpkg/dpkg.cfg.d/01-nodoc
 
-# Size: the stock GNOME wallpapers (ours live in backgrounds/diamond), the build's
+# Size: the stock GNOME wallpapers (ours live in backgrounds/sandbox), the build's
 # journal and the installer log are not part of the product.
 RUN rm -rf /usr/share/backgrounds/gnome /usr/share/gnome-background-properties /var/log/installer \
  && (journalctl --rotate; journalctl --vacuum-time=1s) >/dev/null 2>&1; find /var/log -type f -name '*.log' -exec truncate -s 0 {} + \
- && mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nSystemMaxUse=48M\n' > /etc/systemd/journald.conf.d/50-diamond.conf
+ && mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nSystemMaxUse=48M\n' > /etc/systemd/journald.conf.d/50-sandbox.conf
 
 # The warm snapshot ships every non-zero page of RAM. With init_on_free the
 # kernel zeroes each page as it is freed, so at any moment only the live

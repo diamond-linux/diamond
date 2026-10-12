@@ -1,32 +1,58 @@
 #!/usr/bin/env python3
-"""Diamond Linux Welcome — the first-login window: what this desktop is, where things are.
+"""Sandbox Linux Welcome — the first-login window: what this desktop is, where things are.
 Shows once at login (autostart), then from the menu."""
 import os, subprocess, sys
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
-STAMP = os.path.expanduser("~/.config/diamond/welcome-shown")
+STAMP = os.path.expanduser("~/.config/sandbox/welcome-shown")
 if "--autostart" in sys.argv:
     if os.path.exists(STAMP):
         sys.exit(0)
     os.makedirs(os.path.dirname(STAMP), exist_ok=True)
     open(STAMP, "w").close()
 
-GOLD = "#f5b81e"
-CSS = f"""
-window, .bg {{ background-color: #12121c; }}
-.title {{ font-size: 30px; font-weight: 800; color: #fbe6ad; }}
-.tag {{ font-size: 15px; color: {GOLD}; font-weight: 600; }}
-.sub {{ font-size: 13px; color: #b9b3a3; }}
-.section {{ font-size: 11px; font-weight: 700; color: {GOLD}; letter-spacing: 1px; }}
-.tile {{ background-color: #1b1b28; border: 1px solid #262636; border-radius: 14px; padding: 12px 6px; }}
-.tile:hover {{ background-color: #242436; border-color: {GOLD}; }}
-.tile label {{ color: #e8e2d2; font-size: 12px; }}
-.go {{ background-color: {GOLD}; background-image: none; color: #1a1408; font-weight: 700;
+# The palette is the sandbox mark's: navy, the blues, the sand.
+NAVY, BLUE, SKY, SAND, CREAM = "#002B5A", "#1680F6", "#37D0F5", "#F9DAC0", "#FFF6EC"
+
+# Follow the desktop's colour scheme (dark by default; light when the user flips it).
+try:
+    from gi.repository import Gio
+    _dark = "dark" in Gio.Settings.new("org.gnome.desktop.interface").get_string("color-scheme")
+except Exception:
+    _dark = True
+
+if _dark:
+    CSS = f"""
+window, .bg {{ background-color: #0a1a33; }}
+.title {{ font-size: 30px; font-weight: 800; color: {SAND}; }}
+.tag {{ font-size: 15px; color: {SKY}; font-weight: 600; }}
+.sub {{ font-size: 13px; color: #b7c4d8; }}
+.section {{ font-size: 11px; font-weight: 700; color: {SKY}; letter-spacing: 1px; }}
+.tile {{ background-color: #10254a; border: 1px solid #1b3a6b; border-radius: 14px; padding: 12px 6px; }}
+.tile:hover {{ background-color: #163263; border-color: {SKY}; }}
+.tile label {{ color: {CREAM}; font-size: 12px; }}
+.go {{ background-color: {BLUE}; background-image: none; color: #ffffff; font-weight: 700;
        border-radius: 10px; padding: 8px 26px; border: none; text-shadow: none; }}
-.go:hover {{ background-color: #ffcf4a; }}
+.go:hover {{ background-color: {SKY}; color: {NAVY}; }}
 """
+    WORDMARK = "/usr/share/pixmaps/sandbox-wordmark-dark.png"
+else:
+    CSS = f"""
+window, .bg {{ background-color: {CREAM}; }}
+.title {{ font-size: 30px; font-weight: 800; color: {NAVY}; }}
+.tag {{ font-size: 15px; color: {BLUE}; font-weight: 600; }}
+.sub {{ font-size: 13px; color: #4a5a74; }}
+.section {{ font-size: 11px; font-weight: 700; color: {BLUE}; letter-spacing: 1px; }}
+.tile {{ background-color: #ffffff; border: 1px solid #f3cfae; border-radius: 14px; padding: 12px 6px; }}
+.tile:hover {{ background-color: #fff1e2; border-color: {BLUE}; }}
+.tile label {{ color: {NAVY}; font-size: 12px; }}
+.go {{ background-color: {BLUE}; background-image: none; color: #ffffff; font-weight: 700;
+       border-radius: 10px; padding: 8px 26px; border: none; text-shadow: none; }}
+.go:hover {{ background-color: {NAVY}; }}
+"""
+    WORDMARK = "/usr/share/pixmaps/sandbox-wordmark-light.png"
 
 TILES = [
     ("YOUR DESKTOP", [
@@ -56,14 +82,8 @@ def launch(_b, argv):
     except Exception as e:
         print(e, file=sys.stderr)
 
-# Follow the desktop's colour scheme (dark by default; light when the user flips it).
-try:
-    from gi.repository import Gio
-    _dark = "dark" in Gio.Settings.new("org.gnome.desktop.interface").get_string("color-scheme")
-except Exception:
-    _dark = True
 Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", _dark)
-win = Gtk.Window(title="Welcome to Diamond")
+win = Gtk.Window(title="Welcome to Sandbox")
 win.set_default_size(760, 560)
 win.set_resizable(False)
 win.set_position(Gtk.WindowPosition.CENTER)
@@ -77,9 +97,9 @@ outer.set_border_width(26); outer.get_style_context().add_class("bg")
 head = Gtk.Box(spacing=18)
 tb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6); tb.set_valign(Gtk.Align.CENTER)
 # the wordmark, as on the wallpaper, in place of a text title
-wpb = GdkPixbuf.Pixbuf.new_from_file_at_scale("/usr/share/pixmaps/diamond-wordmark.png", 220, 52, True)
+wpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(WORDMARK, 220, 52, True)
 t = Gtk.Image.new_from_pixbuf(wpb); t.set_halign(Gtk.Align.START); t.set_margin_bottom(2)
-g = Gtk.Label(label="Hard like a diamond.", xalign=0); g.get_style_context().add_class("tag")
+g = Gtk.Label(label="A whole computer, sealed inside an egg.", xalign=0); g.get_style_context().add_class("tag")
 s = Gtk.Label(label="A Linux desktop that stays out of your way. Your apps in the dock at the bottom, Claude and Codex ready to sign in, search from the top, everything else in Settings.", xalign=0)
 s.get_style_context().add_class("sub"); s.set_line_wrap(True); s.set_max_width_chars(70)
 for w_ in (t, g, s): tb.pack_start(w_, False, False, 0)

@@ -1,6 +1,6 @@
 # Credits
 
-Diamond Linux is a recipe on top of other people's work. Thank you to all of them.
+Sandbox Linux is a recipe on top of other people's work. Thank you to all of them.
 
 ## The system
 
@@ -20,15 +20,16 @@ Diamond Linux is a recipe on top of other people's work. Thank you to all of the
 - **Noto** fonts by Google, SIL Open Font License.
 - **Terminus** console font (used by the console eggs in the same family), SIL Open Font License.
 - **Garuda Linux**: the layout of the GNOME edition, a floating dock under a clean top bar with
-  a Welcome window on first login, is what Diamond set out to match. No Garuda files are used.
+  a Welcome window on first login, is what Sandbox set out to match. No Garuda files are used.
   https://garudalinux.org
 - **Tux** by Larry Ewing and The GIMP; the flat version by the Linux Foundation. Wallpaper art
   only in earlier builds; kept in the repository as `tux.svg`.
-- **The gem** (`diamond.svg`) was downloaded from SVG Repo (https://www.svgrepo.com). Its
-  collection licence is being confirmed; if you are its author, please open an issue so we
-  can credit you properly or replace it.
-- The DIAMOND wordmark is set in Phosphate, an Apple system font; only the rendered image
-  ships here.
+- **The sandbox mark** (`sandbox.svg`, "browser-sandbox" from the progressive-webapps
+  security set) was downloaded from SVG Repo (https://www.svgrepo.com). Its collection
+  licence is being confirmed; if you are its author, please open an issue so we can credit
+  you properly or replace it.
+- The SANDBOX wordmark is set in Avenir Next Heavy, an Apple system font; only the rendered
+  images ship here. The wallpapers are the mark and the wordmark over the mark's own colours.
 
 ## Apps that install at build time (not redistributed here)
 
@@ -49,5 +50,5 @@ covered by this repository's licence and remain their owners' property.
 
 ## EggRun
 
-Diamond is built, packaged and delivered with **EggRun** (https://eggrun.ai) by Camouflage
+Sandbox is built, packaged and delivered with **EggRun** (https://eggrun.ai) by Camouflage
 Networks Inc.: the egg format, the Yolk hypervisor, the hub and the desktop app.

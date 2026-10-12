@@ -1,6 +1,6 @@
 [org.gnome.shell]
 enabled-extensions=['dash-to-dock@micxgx.gmail.com', 'ubuntu-appindicators@ubuntu.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com']
-favorite-apps=['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'diamond-welcome.desktop']
+favorite-apps=['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'sandbox-welcome.desktop']
 welcome-dialog-last-shown-version='99.0'
 
 [org.gnome.shell.extensions.dash-to-dock]
@@ -22,7 +22,7 @@ click-action='minimize-or-previews'
 
 [org.gnome.desktop.interface]
 color-scheme='prefer-dark'
-accent-color='yellow'
+accent-color='blue'
 icon-theme='Papirus-Dark'
 cursor-theme='Adwaita'
 font-name='Inter 11'
@@ -37,15 +37,15 @@ titlebar-font='Inter Bold 11'
 button-layout='appmenu:minimize,maximize,close'
 
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/diamond/diamond-light.jpg'
-picture-uri-dark='file:///usr/share/backgrounds/diamond/diamond-dark.jpg'
+picture-uri='file:///usr/share/backgrounds/sandbox/sandbox-light.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/sandbox/sandbox-dark.jpg'
 picture-options='zoom'
-primary-color='#11111b'
+primary-color='#06142b'
 
 [org.gnome.desktop.screensaver]
 lock-enabled=false
 idle-activation-enabled=false
-picture-uri='file:///usr/share/backgrounds/diamond/diamond-dark.jpg'
+picture-uri='file:///usr/share/backgrounds/sandbox/sandbox-dark.jpg'
 
 [org.gnome.desktop.session]
 idle-delay=uint32 0

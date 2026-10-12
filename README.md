@@ -1,14 +1,14 @@
-# Diamond Linux
+# Sandbox Linux
 
-**Hard like a diamond.** A beautiful, easy Linux desktop for people who found Linux hard
-to learn. Debian 13 underneath, GNOME 48 on top, Google Chrome, and Claude and Codex ready on
+A beautiful, easy Linux desktop for people who found Linux hard to learn, sealed inside
+an egg. Debian 13 underneath, GNOME 48 on top, Google Chrome, and Claude and Codex ready on
 the dock. Everything built for Linux runs.
 
-Diamond is delivered as an **egg**: a complete computer as a file that installs like an app
-and starts from a warm snapshot. Get it from the EggRun hub as `egg/diamond`, or build it
+Sandbox is delivered as an **egg**: a complete computer as a file that installs like an app
+and starts from a warm snapshot. Get it from the EggRun hub as `egg/sandbox`, or build it
 yourself from this repository.
 
-Sites: [diamondlinux.org](https://diamondlinux.org) · [eggrun.ai](https://eggrun.ai)
+Sites: [github.com/sandboxlinux/sandbox](https://github.com/sandboxlinux/sandbox) · [eggrun.ai](https://eggrun.ai)
 
 ## Screenshots
 
@@ -26,9 +26,9 @@ Sites: [diamondlinux.org](https://diamondlinux.org) · [eggrun.ai](https://eggru
 - Google Chrome (Google's arm64 build)
 - Claude Desktop and Claude Code from Anthropic's apt repositories
 - ChatGPT with Codex (OpenAI's Linux preview) and the Codex CLI
-- Dark style by default, light style one click away, a Diamond wallpaper for each
+- Dark style by default, light style one click away, a Sandbox wallpaper for each
 - A Welcome window on first login that says where things are
-- One local account, `diamond` / `diamond`, with sudo. Nothing else is baked in; every app
+- One local account, `sandbox` / `sandbox`, with sudo. Nothing else is baked in; every app
   signs in with your own account on first launch
 
 ## Build it
@@ -36,8 +36,8 @@ Sites: [diamondlinux.org](https://diamondlinux.org) · [eggrun.ai](https://eggru
 With [EggRun](https://eggrun.ai) installed:
 
 ```
-egg build --egg diamond .
-egg run diamond
+egg build --egg sandbox .
+egg run sandbox
 ```
 
 The `Eggfile` is the whole recipe. It starts from the `egg/debian-13` base, installs the
@@ -49,21 +49,21 @@ the published egg ships only live blocks.
 | Path | What |
 |---|---|
 | `Eggfile` | the recipe |
-| `diamond.gschema.override` | GNOME defaults: dock, dark style, wallpapers, favourites |
+| `sandbox.gschema.override` | GNOME defaults: dock, dark style, the blue accent, wallpapers, favourites |
 | `gdm/daemon.conf` | autologin |
 | `welcome/` | the Welcome window (Python + GTK) and its launchers |
 | `ai/` | launchers and icons for Claude CLI and Codex CLI, the EggRun mark |
 | `wallpaper-dark.jpg`, `wallpaper-light.jpg` | the two wallpapers, 2560x1600 |
-| `logo.png`, `menu-diamond.png`, `diamond.svg` | the gem |
-| `wordmark.png`, `wordmark-tight.png` | the DIAMOND wordmark |
+| `sandbox.svg`, `logo.png`, `menu-sandbox.png` | the sandbox mark |
+| `wordmark-dark.png`, `wordmark-light.png` | the SANDBOX wordmark, one per colour scheme |
 | `screenshots/` | what ships on the hub card |
 
 ## Credits
 
-Diamond stands on other people's work. See [CREDITS.md](CREDITS.md).
+Sandbox stands on other people's work. See [CREDITS.md](CREDITS.md).
 
 ## Licence
 
-The recipe, the Welcome app, the configuration and the Diamond artwork are © Camouflage
+The recipe, the Welcome app, the configuration and the Sandbox artwork are © Camouflage
 Networks Inc. and released under the GNU General Public License v3.0, see [LICENSE](LICENSE). Third-party names and
 marks referenced here belong to their owners; see CREDITS.md for the carve-outs.
