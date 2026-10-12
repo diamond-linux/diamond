@@ -30,7 +30,10 @@ LOGO logo.png
 
 INSTALL agent
 
-RUN apt-get update
+# Every package at Debian's current stable + security level before anything
+# is added on top: the hub scans each build against OSV, and an egg we make
+# ourselves ships with the fixes Debian has already published.
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y --no-install-recommends
 # GNOME 48 without recommends: the shell, session, GDM, the core apps, Dash to
 # Dock for the Garuda-style floating dock, AppIndicator for tray icons, the
 # extensions pack for user-theme. Recommends would pull games, printing,
