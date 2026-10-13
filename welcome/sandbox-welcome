@@ -33,6 +33,7 @@ window, .bg {{ background-color: #0a1a33; }}
 .tile {{ background-color: #10254a; border: 1px solid #1b3a6b; border-radius: 14px; padding: 12px 6px; }}
 .tile:hover {{ background-color: #163263; border-color: {SKY}; }}
 .tile label {{ color: {CREAM}; font-size: 12px; }}
+.key {{ color: {SAND}; font-weight: 700; font-size: 13px; }}
 .go {{ background-color: {BLUE}; background-image: none; color: #ffffff; font-weight: 700;
        border-radius: 10px; padding: 8px 26px; border: none; text-shadow: none; }}
 .go:hover {{ background-color: {SKY}; color: {NAVY}; }}
@@ -48,6 +49,7 @@ window, .bg {{ background-color: {CREAM}; }}
 .tile {{ background-color: #ffffff; border: 1px solid #f3cfae; border-radius: 14px; padding: 12px 6px; }}
 .tile:hover {{ background-color: #fff1e2; border-color: {BLUE}; }}
 .tile label {{ color: {NAVY}; font-size: 12px; }}
+.key {{ color: {BLUE}; font-weight: 700; font-size: 13px; }}
 .go {{ background-color: {BLUE}; background-image: none; color: #ffffff; font-weight: 700;
        border-radius: 10px; padding: 8px 26px; border: none; text-shadow: none; }}
 .go:hover {{ background-color: {NAVY}; }}
@@ -70,11 +72,60 @@ TILES = [
         ("Codex CLI", "codex-cli", ["kgx", "-e", "codex"]),
     ]),
     ("EGGRUN", [
+        ("Getting around", "help-contents", [sys.argv[0], "--guide"]),
         ("eggrun.ai", "eggrun", ["google-chrome-stable", "https://eggrun.ai"]),
-        ("Docs", "help-contents", ["google-chrome-stable", "https://docs.eggrun.ai"]),
-        ("Learn", "accessories-dictionary", ["google-chrome-stable", "https://learn.eggrun.ai"]),
     ]),
 ]
+
+# "Getting around": the desktop explained in one page, offline. Opened from
+# the tile above and from the Welcome app in the dock. Keys are the ones this
+# desktop honours; Mac names are given where the egg runs on a Mac.
+GUIDE = [
+    ("FINDING THINGS", [
+        ("The dock", "Your apps, along the bottom. It never hides. Click one to open it, click again to bring it back."),
+        ("Apps menu", "Top left. Every installed app, by category."),
+        ("Overview", "Press Super (the \u2318 key on a Mac) or click Activities. Start typing to search apps, files and settings."),
+        ("Search bar", "The field at the top of the Overview finds anything: an app, a file, a setting, a calculation."),
+    ]),
+    ("WINDOWS", [
+        ("Switch apps", "Alt+Tab (Option+Tab on a Mac). \u2318+Tab stays with the Mac."),
+        ("Fill the screen", "Super+\u2191 (\u2318+\u2191). Super+\u2193 brings it back."),
+        ("Side by side", "Super+\u2190 or Super+\u2192 tiles the window to one half. Drag a window to a screen edge for the same."),
+        ("Close", "Alt+F4, or the \u00d7 in the title bar."),
+        ("Workspaces", "Super+Page Up and Super+Page Down move between them; the Overview shows them along the top."),
+    ]),
+    ("FROM A MAC", [
+        ("Keys", "\u2318 is Super and Option is Alt inside this desktop. \u2318V pastes your Mac clipboard in; \u2318W, \u2318Q, \u2318C stay with the Mac."),
+        ("Trackpad", "Two-finger scroll scrolls. Click with two fingers for a right-click. Pinch and three-finger swipes belong to the Mac and never reach the egg."),
+        ("Full screen", "Control+\u2318+F on the egg window. Control+Option and + or \u2212 zoom it."),
+    ]),
+    ("THIS COMPUTER", [
+        ("Copy and paste", "Ctrl+C and Ctrl+V inside the desktop; Ctrl+Shift+C and Ctrl+Shift+V in the terminal."),
+        ("Your account", "You are signed in as sandbox. When the system asks for a password, it is sandbox."),
+        ("Look and feel", "Settings \u25b8 Appearance: dark or light, the accent colour, the wallpaper."),
+        ("Chrome, Claude, Codex", "Each signs in with your own account the first time you open it."),
+        ("Messy?", "Nothing here can touch your Mac. Throw the egg away from the desk and download a fresh one."),
+    ]),
+]
+
+def show_guide():
+    w = Gtk.Window(title="Getting around")
+    w.set_default_size(760, 640); w.set_position(Gtk.WindowPosition.CENTER)
+    w.connect("destroy", Gtk.main_quit)
+    sc = Gtk.ScrolledWindow(); sc.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10); box.set_border_width(26); box.get_style_context().add_class("bg")
+    title = Gtk.Label(label="Getting around", xalign=0); title.get_style_context().add_class("title")
+    box.pack_start(title, False, False, 0)
+    for section, rows in GUIDE:
+        lab = Gtk.Label(label=section, xalign=0); lab.get_style_context().add_class("section"); lab.set_margin_top(10)
+        box.pack_start(lab, False, False, 0)
+        for key, text in rows:
+            row = Gtk.Box(spacing=14); row.get_style_context().add_class("tile")
+            k = Gtk.Label(label=key, xalign=0); k.set_size_request(170, -1); k.get_style_context().add_class("key")
+            t = Gtk.Label(label=text, xalign=0); t.set_line_wrap(True); t.set_max_width_chars(60); t.get_style_context().add_class("sub")
+            row.pack_start(k, False, False, 0); row.pack_start(t, True, True, 0)
+            box.pack_start(row, False, False, 0)
+    sc.add(box); w.add(sc); w.show_all(); Gtk.main()
 
 def launch(_b, argv):
     try:
@@ -83,6 +134,11 @@ def launch(_b, argv):
         print(e, file=sys.stderr)
 
 Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", _dark)
+if "--guide" in sys.argv:
+    prov = Gtk.CssProvider(); prov.load_from_data(CSS.encode())
+    Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), prov, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+    show_guide(); sys.exit(0)
+
 win = Gtk.Window(title="Welcome to Sandbox")
 win.set_default_size(760, 560)
 win.set_resizable(False)
