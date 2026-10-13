@@ -84,7 +84,7 @@ GUIDE = [
     ("FINDING THINGS", [
         ("The dock", "Your apps, along the bottom. It never hides. Click one to open it, click again to bring it back."),
         ("Apps menu", "Top left. Every installed app, by category."),
-        ("Overview", "Press Super (the \u2318 key on a Mac) or click Activities. Start typing to search apps, files and settings."),
+        ("Overview", "Press Super (the \u2318 key on a Mac) or click the pill at the top left. Start typing to search apps, files and settings."),
         ("Search bar", "The field at the top of the Overview finds anything: an app, a file, a setting, a calculation."),
     ]),
     ("WINDOWS", [
