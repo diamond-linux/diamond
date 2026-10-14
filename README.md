@@ -1,7 +1,7 @@
 # Sandbox Linux
 
 A beautiful, easy Linux desktop for people who found Linux hard to learn, sealed inside
-an egg. Debian 13 underneath, GNOME 48 on top, Google Chrome, and Claude and Codex ready on
+an egg. Debian 13 underneath, GNOME 48 on top, Google Chrome and Firefox, and Claude and Codex ready on
 the dock. Everything built for Linux runs.
 
 Sandbox is delivered as an **egg**: a complete computer as a file that installs like an app
@@ -24,6 +24,7 @@ Sites: [sandboxlinux.org](https://sandboxlinux.org) · [github.com/sandboxlinux/
 - GNOME 48 on Wayland: Files, Console, Settings, Text Editor, Document Viewer, Image Viewer,
   Calculator, Archive Manager; Dash to Dock for the floating dock
 - Google Chrome (Google's arm64 build)
+- Firefox (Mozilla's current build) with WebGPU on the GPU
 - Claude Desktop and Claude Code from Anthropic's apt repositories
 - ChatGPT with Codex (OpenAI's Linux preview) and the Codex CLI
 - Dark style by default, light style one click away, a Sandbox wallpaper for each

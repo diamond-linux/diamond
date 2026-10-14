@@ -11,6 +11,7 @@ everything built for Linux runs.
 - GNOME 48 on Wayland: Files, Console, Settings, Text Editor, Document Viewer,
   Image Viewer, Calculator, Archive Manager
 - Google Chrome (Google's own arm64 build)
+- Firefox (Mozilla's own build, current), with WebGPU running on the GPU
 - Claude Desktop (Anthropic's Linux beta) and Claude Code, from Anthropic's apt repositories
 - ChatGPT with Codex (OpenAI's Linux preview) and the Codex CLI
 - All four on the dock; each signs in on first launch with your own account

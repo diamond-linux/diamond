@@ -2,15 +2,16 @@
 # Sandbox Linux. The house desktop: the Garuda GNOME look
 # (dark by default with a light scheme a click away, a floating dock, the search
 # pill, a poster wallpaper per scheme, a Welcome window) on Debian 13 with GNOME 48,
-# Chrome, and Claude + ChatGPT/Codex (desktop apps and CLIs) on the dock.
+# Chrome, Firefox, and Claude + ChatGPT/Codex (desktop apps and CLIs) on the dock.
 #
 # Base: egg/debian-13 (stable, apt, glibc — the audience is people who found
 # Ubuntu hard; nothing may break or refuse to run). Desktop: GNOME 48 without
 # recommends, Dash to Dock for the dock. Theme: stock Adwaita, dark, with the
 # yellow accent (libadwaita apps follow it natively; no GTK theme to maintain).
 # Icons: Papirus-Dark (GPL-3), trimmed to the two variants in use. Font: Inter.
-# Greeter: GDM, autologin. Browser: Chrome, Google's own arm64 build from
-# dl.google.com (Firefox dropped; Chrome is what people know).
+# Greeter: GDM, autologin. Browsers: Chrome, Google's own arm64 build from
+# dl.google.com (what people know), and Firefox from Mozilla's apt repository
+# (WebGPU on the GPU; Chrome's WebGPU cannot reach it from inside a VM).
 # Published as egg/sandbox; EggRun/docs/sandbox keeps the research notes and test history.
 
 BOOT mode=uefi
@@ -25,7 +26,7 @@ GPU virgl vram=2G
 DISPLAY 1280x800 scale=2
 NETWORK restricted
 
-LABEL description="Sandbox Linux: a beautiful, easy Linux desktop with Chrome, Claude and Codex, sealed inside an egg." category="Desktop" tags="sandbox,debian,gnome,chrome,desktop" license="EggRun EULA"
+LABEL description="Sandbox Linux: a beautiful, easy Linux desktop with Chrome, Firefox, Claude and Codex, sealed inside an egg." category="Desktop" tags="sandbox,debian,gnome,chrome,firefox,webgpu,desktop" license="EggRun EULA"
 LOGO logo.png
 
 INSTALL agent
@@ -48,6 +49,24 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # Chrome: Google's arm64 .deb; its postinst registers Google's apt repo and key.
 RUN wget -qO /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_arm64.deb \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/chrome.deb && rm /tmp/chrome.deb
+# Firefox, current, from Mozilla's own apt repository: WebGPU on the egg's GPU.
+# Chrome's WebGPU needs a Vulkan-to-GL handoff that no VM can give it; Firefox
+# runs WebGPU on wgpu straight over Vulkan, which Venus serves to the Mac's GPU.
+# Debian's firefox-esr (140) has WebGPU compiled out, so it has to be Mozilla's
+# build, pinned so apt never swaps it for the ESR.
+RUN install -d -m 0755 /etc/apt/keyrings \
+ && wget -qO /etc/apt/keyrings/packages.mozilla.org.asc https://packages.mozilla.org/apt/repo-signing-key.gpg \
+ && gpg --show-keys --with-fingerprint /etc/apt/keyrings/packages.mozilla.org.asc | grep -q "35BA A0B3 3E9E B396 F59C  A838 C0BA 5CE6 DC63 15A3" \
+ && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" > /etc/apt/sources.list.d/mozilla.list \
+ && printf 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\n' > /etc/apt/preferences.d/mozilla \
+ && apt-get update && apt-cache policy firefox | grep -q "packages.mozilla.org" \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends firefox \
+ && firefox --version
+# Firefox 158 on Linux still keeps WebGPU behind dom.webgpu.enabled; the policy
+# file turns it on for every profile ("default" keeps it changeable in about:config).
+RUN install -d -m 0755 /etc/firefox/policies \
+ && printf '{"policies":{"Preferences":{"dom.webgpu.enabled":{"Value":true,"Status":"default"}}}}\n' > /etc/firefox/policies/policies.json \
+ && python3 -c 'import json; p=json.load(open("/etc/firefox/policies/policies.json"))["policies"]["Preferences"]["dom.webgpu.enabled"]; assert p["Value"] is True, p'
 # AI on the dock. Claude Desktop (Anthropic's Linux beta) and Claude Code come
 # from Anthropic's signed apt repositories, so apt keeps them current; the
 # ChatGPT app with Codex (OpenAI's Linux preview) is OpenAI's own arm64 .deb,
@@ -91,7 +110,7 @@ RUN gtk-update-icon-cache -q -f /usr/share/icons/hicolor || true
 RUN set -e; cd /usr/share/applications; \
     CLAUDE=$(grep -lis 'Exec=.*claude-desktop' *.desktop | head -n1); CHATGPT=$(grep -lis 'Exec=.*chatgpt' *.desktop | head -n1); \
     test -n "$CLAUDE" && test -n "$CHATGPT"; echo "dock: $CLAUDE $CHATGPT"; \
-    printf '%s\n' "[org.gnome.shell]" "favorite-apps=['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', '$CLAUDE', 'claude-code.desktop', '$CHATGPT', 'codex.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'sandbox-welcome.desktop']" > /usr/share/glib-2.0/schemas/60_sandbox-dock.gschema.override
+    printf '%s\n' "[org.gnome.shell]" "favorite-apps=['google-chrome.desktop', 'firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', '$CLAUDE', 'claude-code.desktop', '$CHATGPT', 'codex.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop', 'sandbox-welcome.desktop']" > /usr/share/glib-2.0/schemas/60_sandbox-dock.gschema.override
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Papirus ships five variants; the desktop uses Papirus-Dark (inherits Papirus).
