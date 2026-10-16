@@ -67,6 +67,14 @@ RUN install -d -m 0755 /etc/apt/keyrings \
 RUN install -d -m 0755 /etc/firefox/policies \
  && printf '{"policies":{"Preferences":{"dom.webgpu.enabled":{"Value":true,"Status":"default"}}}}\n' > /etc/firefox/policies/policies.json \
  && python3 -c 'import json; p=json.load(open("/etc/firefox/policies/policies.json"))["policies"]["Preferences"]["dom.webgpu.enabled"]; assert p["Value"] is True, p'
+
+# Firefox 158 crashes on quit whenever a WebGPU page is open: wgpu drops its
+# Vulkan instance, the loader dlcloses the Venus driver, and the CanvasRenderer
+# thread is still inside it (SIGSEGV at an unmapped PC; the crash reporter on
+# every quit). The Vulkan loader has a switch for exactly that; pam_env puts
+# /etc/environment into the GNOME session, so every dock launch gets it.
+# Verified 2026-10-16: three quits with the switch clean, the control crashed.
+RUN echo 'VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1' >> /etc/environment
 # AI on the dock. Claude Desktop (Anthropic's Linux beta) and Claude Code come
 # from Anthropic's signed apt repositories, so apt keeps them current; the
 # ChatGPT app with Codex (OpenAI's Linux preview) is OpenAI's own arm64 .deb,
